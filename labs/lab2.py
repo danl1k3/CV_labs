@@ -465,6 +465,24 @@ def main():
         json.dump(results, f, ensure_ascii=False, indent=1)
     print("Готово, результати в", os.path.abspath(OUT_DIR))
 
+    clean_c, _ = synth_circles(300)
+    noisy_c = add_gaussian_noise(clean_c, 40)
+
+    for tag, img, sigma, label in [
+        ("clean", clean_c, 1.0, "без шуму"),
+        ("noise", noisy_c, 2.0, "шум"),
+    ]:
+        n_found, n_edges = run_circles(
+            img,
+            f"Синтетичні кола, {label}",
+            f"circles_synth_{tag}.png",
+            r_range=(15, 65),
+            sigma=sigma,
+            thr=0.5,
+            max_circles=8,
+        )
+        print_row(f"synth_circles / {tag}", n_found, n_edges)
+        results[f"circles_synth_{tag}"] = dict(circles=n_found, edges=n_edges)
 
 if __name__ == "__main__":
     main()
